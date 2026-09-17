@@ -211,7 +211,7 @@
       </div>
 
       <div id="grid-centros" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Tarjetas dinámicas para los 9 centros -->
+        <!-- Tarjetas dinámicas -->
       </div>
     </section>
 
@@ -238,7 +238,7 @@
             </tr>
           </thead>
           <tbody id="table-envios-body" class="divide-y divide-slate-100">
-            <!-- Se puebla dinámicamente desde el backend -->
+            <!-- Se puebla dinámicamente -->
           </tbody>
         </table>
       </div>
@@ -315,9 +315,9 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT CONEXIÓN BACKEND APPS SCRIPT -->
+  <!-- JAVASCRIPT CONEXIÓN JSONP BACKEND APPS SCRIPT -->
   <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzVdY7g2MNmHsER9KGW3CyGBv5Nsk-zYZyUevR9eLfXFczZ5oONYAsvvvnHJCgyYyJo/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxG3qnSBxijNATeBQGUcYaW5I3Jwlr9TOp5yh_E17lSwJHN-AUje7ROfwrw_NY0Avin/exec';
 
     let appData = { envios: [], centros: [], stockCentral: [] };
 
@@ -325,114 +325,134 @@
       cargarDatos();
     });
 
-    async function cargarDatos() {
+    // CARGA DE DATOS VÍA INYECCIÓN DINÁMICA DE SCRIPT (JSONP - Evita CORS 100%)
+    function cargarDatos() {
       const statusEl = document.getElementById('api-status');
       statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800";
       statusEl.innerHTML = '<span class="w-2 h-2 mr-1.5 bg-amber-500 rounded-full animate-pulse"></span> Sincronizando...';
 
-      try {
-        const response = await fetch(APPS_SCRIPT_URL + '?action=getAppData');
-        appData = await response.json();
+      const oldScript = document.getElementById('jsonp-script');
+      if (oldScript) oldScript.remove();
 
-        renderDashboard();
-        renderCentros();
-        renderEnvios();
-        renderStock();
+      const script = document.createElement('script');
+      script.id = 'jsonp-script';
+      script.src = `${APPS_SCRIPT_URL}?action=getAppData&callback=procesarRespuestaJSONP`;
 
-        statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800";
-        statusEl.innerHTML = '<span class="w-2 h-2 mr-1.5 bg-emerald-500 rounded-full"></span> Conectado a Sheets';
-      } catch (err) {
-        console.error('Error al conectar con Google Apps Script:', err);
+      script.onerror = function() {
         statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800";
         statusEl.innerHTML = '<span class="w-2 h-2 mr-1.5 bg-red-500 rounded-full"></span> Error de Conexión';
-      }
+      };
+
+      document.body.appendChild(script);
+    }
+
+    // CALLBACK INVOCADO DESDE APPS SCRIPT
+    function procesarRespuestaJSONP(data) {
+      appData = data;
+
+      renderDashboard();
+      renderCentros();
+      renderEnvios();
+      renderStock();
+
+      const statusEl = document.getElementById('api-status');
+      statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800";
+      statusEl.innerHTML = '<span class="w-2 h-2 mr-1.5 bg-emerald-500 rounded-full"></span> Conectado a Sheets';
     }
 
     function renderDashboard() {
-      // Centros Dashboard
       const centrosBody = document.getElementById('table-centros-dashboard');
       centrosBody.innerHTML = '';
-      appData.centros.slice(0, 5).forEach(c => {
-        centrosBody.innerHTML += `
-          <tr>
-            <td class="py-2.5 px-3 font-semibold text-slate-700">${c.CENTRO_MEDICO}</td>
-            <td class="py-2.5 px-3">${c.STOCK_PACKS_25} / 25</td>
-            <td class="py-2.5 px-3 font-medium text-slate-800">${c.PAPS_RETIRADOS_ULTIMA} PAPs</td>
-            <td class="py-2.5 px-3 text-slate-500">${c.ULTIMA_VISITA}</td>
-            <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-medium">${c.ESTADO_CENTRO || 'Al Día'}</span></td>
-          </tr>
-        `;
-      });
+      if (appData.centros && appData.centros.length) {
+        appData.centros.slice(0, 5).forEach(c => {
+          centrosBody.innerHTML += `
+            <tr>
+              <td class="py-2.5 px-3 font-semibold text-slate-700">${c.CENTRO_MEDICO}</td>
+              <td class="py-2.5 px-3">${c.STOCK_PACKS_25} / 25</td>
+              <td class="py-2.5 px-3 font-medium text-slate-800">${c.PAPS_RETIRADOS_ULTIMA} PAPs</td>
+              <td class="py-2.5 px-3 text-slate-500">${c.ULTIMA_VISITA}</td>
+              <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-medium">${c.ESTADO_CENTRO || 'Al Día'}</span></td>
+            </tr>
+          `;
+        });
+      }
 
-      // Envíos Recientes Dashboard
       const enviosRecientesEl = document.getElementById('envios-recientes-dashboard');
       enviosRecientesEl.innerHTML = '';
-      const enViaje = appData.envios.filter(e => e.ESTADO === 'En Viaje' || e.ESTADO === 'Retorno de resultados');
-      enViaje.forEach(e => {
-        enviosRecientesEl.innerHTML += `
-          <div class="p-2.5 bg-slate-50 rounded-lg border-l-4 border-blue-500">
-            <div class="flex justify-between font-semibold text-slate-700">
-              <span>${e.PROTOCOLO_RANGO}</span>
-              <span class="text-blue-600">${e.ESTADO}</span>
+      if (appData.envios && appData.envios.length) {
+        const enViaje = appData.envios.filter(e => e.ESTADO === 'En Viaje' || e.ESTADO === 'Retorno de resultados');
+        enViaje.forEach(e => {
+          enviosRecientesEl.innerHTML += `
+            <div class="p-2.5 bg-slate-50 rounded-lg border-l-4 border-blue-500">
+              <div class="flex justify-between font-semibold text-slate-700">
+                <span>${e.PROTOCOLO_RANGO}</span>
+                <span class="text-blue-600">${e.ESTADO}</span>
+              </div>
+              <p class="text-slate-500 mt-1">${e.CANTIDAD} Muestras (${e.TIPO_MUESTRA}) | Fecha: ${e.FECHA_ENVIO}</p>
             </div>
-            <p class="text-slate-500 mt-1">${e.CANTIDAD} Muestras (${e.TIPO_MUESTRA}) | Fecha: ${e.FECHA_ENVIO}</p>
-          </div>
-        `;
-      });
+          `;
+        });
+      }
     }
 
     function renderCentros() {
       const grid = document.getElementById('grid-centros');
       grid.innerHTML = '';
-      appData.centros.forEach(c => {
-        grid.innerHTML += `
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
-            <div class="flex justify-between items-center">
-              <h4 class="font-bold text-cap-primary">${c.CENTRO_MEDICO}</h4>
-              <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium">Al Día</span>
+      if (appData.centros && appData.centros.length) {
+        appData.centros.forEach(c => {
+          grid.innerHTML += `
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+              <div class="flex justify-between items-center">
+                <h4 class="font-bold text-cap-primary">${c.CENTRO_MEDICO}</h4>
+                <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium">Al Día</span>
+              </div>
+              <div class="text-xs text-slate-600 space-y-1">
+                <p><strong>Stock Actual Kits:</strong> ${c.STOCK_PACKS_25}/25 packs</p>
+                <p><strong>Última Visita:</strong> ${c.ULTIMA_VISITA}</p>
+                <p><strong>Último Retiro:</strong> ${c.PAPS_RETIRADOS_ULTIMA} Muestras PAP</p>
+              </div>
             </div>
-            <div class="text-xs text-slate-600 space-y-1">
-              <p><strong>Stock Actual Kits:</strong> ${c.STOCK_PACKS_25}/25 packs</p>
-              <p><strong>Última Visita:</strong> ${c.ULTIMA_VISITA}</p>
-              <p><strong>Último Retiro:</strong> ${c.PAPS_RETIRADOS_ULTIMA} Muestras PAP</p>
-            </div>
-          </div>
-        `;
-      });
+          `;
+        });
+      }
     }
 
     function renderEnvios() {
       const tbody = document.getElementById('table-envios-body');
       tbody.innerHTML = '';
-      appData.envios.forEach(e => {
-        tbody.innerHTML += `
-          <tr>
-            <td class="py-3 px-4 font-semibold text-cap-primary">${e.ID_ENVIO}<br><span class="text-slate-400 font-normal">${e.FECHA_ENVIO}</span></td>
-            <td class="py-3 px-4 font-medium">${e.TIPO_MUESTRA}</td>
-            <td class="py-3 px-4 font-mono">${e.PROTOCOLO_RANGO}</td>
-            <td class="py-3 px-4 text-center font-bold">${e.CANTIDAD}</td>
-            <td class="py-3 px-4 text-slate-600">${e.TIROIDES_CASOS || '-'}</td>
-            <td class="py-3 px-4"><span class="px-2 py-1 rounded bg-blue-100 text-blue-800 font-medium">${e.ESTADO}</span></td>
-            <td class="py-3 px-4 text-slate-500">${e.OBSERVACIONES || '-'}</td>
-          </tr>
-        `;
-      });
+      if (appData.envios && appData.envios.length) {
+        appData.envios.forEach(e => {
+          tbody.innerHTML += `
+            <tr>
+              <td class="py-3 px-4 font-semibold text-cap-primary">${e.ID_ENVIO}<br><span class="text-slate-400 font-normal">${e.FECHA_ENVIO}</span></td>
+              <td class="py-3 px-4 font-medium">${e.TIPO_MUESTRA}</td>
+              <td class="py-3 px-4 font-mono">${e.PROTOCOLO_RANGO}</td>
+              <td class="py-3 px-4 text-center font-bold">${e.CANTIDAD}</td>
+              <td class="py-3 px-4 text-slate-600">${e.TIROIDES_CASOS || '-'}</td>
+              <td class="py-3 px-4"><span class="px-2 py-1 rounded bg-blue-100 text-blue-800 font-medium">${e.ESTADO}</span></td>
+              <td class="py-3 px-4 text-slate-500">${e.OBSERVACIONES || '-'}</td>
+            </tr>
+          `;
+        });
+      }
     }
 
     function renderStock() {
       const tbody = document.getElementById('table-stock-body');
       tbody.innerHTML = '';
-      appData.stockCentral.forEach(s => {
-        tbody.innerHTML += `
-          <tr>
-            <td class="py-3 px-4 font-semibold">${s.INSUMO}</td>
-            <td class="py-3 px-4 text-center font-bold">${s.CANTIDAD_CAJAS} cajas</td>
-            <td class="py-3 px-4 text-center">${s.UNIDADES_X_CAJA} un.</td>
-            <td class="py-3 px-4 text-center font-bold text-cap-primary">${s.TOTAL_UNIDADES} un.</td>
-            <td class="py-3 px-4"><span class="px-2 py-0.5 rounded ${s.ESTADO_STOCK === 'Suficiente' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} font-medium">${s.ESTADO_STOCK}</span></td>
-          </tr>
-        `;
-      });
+      if (appData.stockCentral && appData.stockCentral.length) {
+        appData.stockCentral.forEach(s => {
+          tbody.innerHTML += `
+            <tr>
+              <td class="py-3 px-4 font-semibold">${s.INSUMO}</td>
+              <td class="py-3 px-4 text-center font-bold">${s.CANTIDAD_CAJAS} cajas</td>
+              <td class="py-3 px-4 text-center">${s.UNIDADES_X_CAJA} un.</td>
+              <td class="py-3 px-4 text-center font-bold text-cap-primary">${s.TOTAL_UNIDADES} un.</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded ${s.ESTADO_STOCK === 'Suficiente' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} font-medium">${s.ESTADO_STOCK}</span></td>
+            </tr>
+          `;
+        });
+      }
     }
 
     async function guardarVisita(e) {
@@ -458,7 +478,7 @@
         });
 
         closeModal('modal-visita');
-        alert('Registro enviado correctamente. Actualizando panel...');
+        alert('Registro enviado correctamente. Sincronizando datos...');
         setTimeout(cargarDatos, 1500);
       } catch (err) {
         alert('Ocurrió un error al guardar los datos.');
