@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAP - Centro de Anatomía Patológica | Tablero de Gestión</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Remix Icons CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cap: {
+              primary: '#0B5582',
+              dark: '#083E60',
+              light: '#2C80B4',
+              accent: '#EBF3F8',
+              bg: '#F4F7F9'
+            }
+          },
+          fontFamily: {
+            serif: ['Cinzel', 'Georgia', 'serif'],
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-cap-bg font-sans text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- TOP HEADER / BRANDING -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="border-r border-slate-300 pr-4">
+          <h1 class="text-2xl font-bold font-serif text-cap-primary tracking-wide">CAP</h1>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold tracking-wider text-slate-700 uppercase">Centro Anatomía Patológica</h2>
+          <p class="text-xs text-slate-500 font-medium">DRA. MARÍA VALENTINA RISMA</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3 text-xs sm:text-sm">
+        <span id="api-status" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+          <span class="w-2 h-2 mr-1.5 bg-amber-500 rounded-full animate-pulse"></span> Cargando Backend...
+        </span>
+        <button onclick="cargarDatos()" class="bg-cap-primary text-white px-3 py-1.5 rounded-lg hover:bg-cap-dark transition text-xs font-medium flex items-center">
+          <i class="ri-refresh-line mr-1"></i> Sincronizar
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN NAVIGATION -->
+  <nav class="bg-cap-primary text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 sm:space-x-4 overflow-x-auto">
+      <button onclick="switchTab('dashboard')" id="nav-dashboard" class="tab-btn py-3 px-4 text-xs sm:text-sm font-medium border-b-2 border-white flex items-center space-x-2 whitespace-nowrap bg-cap-dark">
+        <i class="ri-dashboard-line"></i> <span>Dashboard General</span>
+      </button>
+      <button onclick="switchTab('centros')" id="nav-centros" class="tab-btn py-3 px-4 text-xs sm:text-sm font-medium border-b-2 border-transparent hover:bg-cap-light/30 flex items-center space-x-2 whitespace-nowrap">
+        <i class="ri-hospital-line"></i> <span>Ruta Centros Médicos (9)</span>
+      </button>
+      <button onclick="switchTab('envios')" id="nav-envios" class="tab-btn py-3 px-4 text-xs sm:text-sm font-medium border-b-2 border-transparent hover:bg-cap-light/30 flex items-center space-x-2 whitespace-nowrap">
+        <i class="ri-plane-line"></i> <span>Envíos a Bs. As.</span>
+      </button>
+      <button onclick="switchTab('stock')" id="nav-stock" class="tab-btn py-3 px-4 text-xs sm:text-sm font-medium border-b-2 border-transparent hover:bg-cap-light/30 flex items-center space-x-2 whitespace-nowrap">
+        <i class="ri-box-3-line"></i> <span>Stock Central Insumos</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- CONTENT CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
+
+    <!-- TAB 1: DASHBOARD -->
+    <section id="tab-dashboard" class="tab-content block space-y-6">
+      
+      <!-- KPI Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">PAPs Recolectados (Últ. Visita)</p>
+              <h3 id="kpi-paps" class="text-2xl font-bold text-slate-800 mt-1">104</h3>
+            </div>
+            <div class="p-2 bg-cap-accent rounded-lg text-cap-primary">
+              <i class="ri-microscope-line text-xl"></i>
+            </div>
+          </div>
+          <p class="text-xs text-emerald-600 mt-2 font-medium"><i class="ri-arrow-up-line"></i> 9 Centros visitados (16/09/2026)</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Muestras En Viaje (Bs. As.)</p>
+              <h3 id="kpi-envios" class="text-2xl font-bold text-amber-600 mt-1">174</h3>
+            </div>
+            <div class="p-2 bg-amber-50 rounded-lg text-amber-600">
+              <i class="ri-truck-line text-xl"></i>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">104 PAPs + 70 Cápsulas Tacos</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Packs en Centros</p>
+              <h3 class="text-2xl font-bold text-slate-800 mt-1">225 unidades</h3>
+            </div>
+            <div class="p-2 bg-blue-50 rounded-lg text-cap-light">
+              <i class="ri-building-4-line text-xl"></i>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">25 packs en cada uno de los 9 centros</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Estado Insumos CAP</p>
+              <h3 class="text-2xl font-bold text-emerald-600 mt-1">Óptimo</h3>
+            </div>
+            <div class="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+              <i class="ri-checkbox-circle-line text-xl"></i>
+            </div>
+          </div>
+          <p class="text-xs text-slate-500 mt-2">Vidrios: 2.750 | Cepillos: 1.800</p>
+        </div>
+      </div>
+
+      <!-- Main Visual Grids -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Estado de Centros Médicos -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-bold text-slate-800 text-base flex items-center">
+              <i class="ri-map-pin-2-line text-cap-primary mr-2"></i> Estado Reciente Centros Médicos
+            </h3>
+            <span class="text-xs text-slate-500">Visita: 16/09/2026</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider">
+                <tr>
+                  <th class="py-2.5 px-3">Centro Médico</th>
+                  <th class="py-2.5 px-3">Stock Packs</th>
+                  <th class="py-2.5 px-3">Retiro Última Visita</th>
+                  <th class="py-2.5 px-3">Última Visita</th>
+                  <th class="py-2.5 px-3">Estado</th>
+                </tr>
+              </thead>
+              <tbody id="table-centros-dashboard" class="divide-y divide-slate-100">
+                <!-- Se puebla dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Acciones Rápidas & Envíos Recientes -->
+        <div class="space-y-6">
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+            <h3 class="font-bold text-slate-800 text-base mb-3 flex items-center">
+              <i class="ri-add-circle-line text-cap-primary mr-2"></i> Operaciones Rápidas
+            </h3>
+            <div class="space-y-2">
+              <button onclick="openModal('modal-visita')" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:bg-cap-accent transition flex items-center justify-between group">
+                <div class="flex items-center space-x-2">
+                  <i class="ri-file-add-line text-cap-primary"></i>
+                  <span class="text-xs font-semibold text-slate-700 group-hover:text-cap-primary">Registrar Recolección en Centro</span>
+                </div>
+                <i class="ri-arrow-right-s-line text-slate-400"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+            <h3 class="font-bold text-slate-800 text-base mb-3 flex items-center">
+              <i class="ri-history-line text-cap-primary mr-2"></i> Envíos en Cursada
+            </h3>
+            <div id="envios-recientes-dashboard" class="space-y-3 text-xs">
+              <!-- Se puebla dinámicamente -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 2: RUTA CENTROS MÉDICOS -->
+    <section id="tab-centros" class="tab-content hidden space-y-6">
+      <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
+        <div>
+          <h3 class="font-bold text-lg text-slate-800">Control de Centros Médicos (Packs de 25 PAPs)</h3>
+          <p class="text-xs text-slate-500">Planilla de reposición e insumos en los 9 puntos de recolección semanal.</p>
+        </div>
+        <button onclick="openModal('modal-visita')" class="bg-cap-primary text-white text-xs px-4 py-2 rounded-lg font-medium hover:bg-cap-dark flex items-center space-x-1">
+          <i class="ri-add-line"></i> <span>Registrar Visita / Planilla</span>
+        </button>
+      </div>
+
+      <div id="grid-centros" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Tarjetas dinámicas para los 9 centros -->
+      </div>
+    </section>
+
+    <!-- TAB 3: ENVÍOS A BUENOS AIRES -->
+    <section id="tab-envios" class="tab-content hidden space-y-6">
+      <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
+        <div>
+          <h3 class="font-bold text-lg text-slate-800">Trazabilidad de Envíos a Buenos Aires</h3>
+          <p class="text-xs text-slate-500">Seguimiento de PAPs y Tacos en los 7 estados de flujo.</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <table class="w-full text-xs text-left">
+          <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
+            <tr>
+              <th class="py-3 px-4">ID / Fecha</th>
+              <th class="py-3 px-4">Tipo</th>
+              <th class="py-3 px-4">Protocolo Rango</th>
+              <th class="py-3 px-4 text-center">Cantidad</th>
+              <th class="py-3 px-4">Tiroides / Casos</th>
+              <th class="py-3 px-4">Estado</th>
+              <th class="py-3 px-4">Observaciones</th>
+            </tr>
+          </thead>
+          <tbody id="table-envios-body" class="divide-y divide-slate-100">
+            <!-- Se puebla dinámicamente desde el backend -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 4: STOCK CENTRAL INSUMOS -->
+    <section id="tab-stock" class="tab-content hidden space-y-6">
+      <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
+        <div>
+          <h3 class="font-bold text-lg text-slate-800">Inventario General de Insumos (CAP Central)</h3>
+          <p class="text-xs text-slate-500">Balance de existencias y unidades disponibles.</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <table class="w-full text-xs text-left">
+          <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
+            <tr>
+              <th class="py-3 px-4">Insumo / Descripción</th>
+              <th class="py-3 px-4 text-center">Cajas</th>
+              <th class="py-3 px-4 text-center">Unidades x Caja</th>
+              <th class="py-3 px-4 text-center">Total Unidades</th>
+              <th class="py-3 px-4">Estado</th>
+            </tr>
+          </thead>
+          <tbody id="table-stock-body" class="divide-y divide-slate-100">
+            <!-- Se puebla dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: REGISTRAR RECOLECCIÓN EN CENTRO -->
+  <div id="modal-visita" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-slate-800 text-base">Registrar Recolección / Reposición</h3>
+        <button onclick="closeModal('modal-visita')" class="text-slate-400 hover:text-slate-600"><i class="ri-close-line text-xl"></i></button>
+      </div>
+
+      <form id="form-visita" class="space-y-3 text-xs" onsubmit="guardarVisita(event)">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Centro Médico</label>
+          <select id="form-centro" class="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-cap-primary">
+            <option>Cerhu</option>
+            <option>Ifem</option>
+            <option>IMT</option>
+            <option>Centro Bolívar</option>
+            <option>Centro Rivadavia</option>
+            <option>Medici</option>
+            <option>Medicina para la Mujer</option>
+            <option>Eticos</option>
+            <option>Centro Medico Trinidad</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Muestras PAPs Retiradas</label>
+          <input type="number" id="form-paps" placeholder="Ej: 12" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Packs de Reposición Entregados (x25)</label>
+          <input type="number" id="form-packs" value="1" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
+        </div>
+
+        <div class="pt-3 flex justify-end space-x-2">
+          <button type="button" onclick="closeModal('modal-visita')" class="px-4 py-2 border rounded-lg text-slate-600 hover:bg-slate-100">Cancelar</button>
+          <button type="submit" id="btn-guardar-visita" class="px-4 py-2 bg-cap-primary text-white rounded-lg font-medium hover:bg-cap-dark">Guardar Registro</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT CONEXIÓN BACKEND APPS SCRIPT -->
+  <script>
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyUD6aMPVUnihvWITjqrRyzvMHLKaRY1YHZmuzKkAJLtRz6cRfpkntMw1Ppgo8yeUXp/exec';
+
+    let appData = { envios: [], centros: [], stockCentral: [] };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarDatos();
+    });
+
+    async function cargarDatos() {
+      const statusEl = document.getElementById('api-status');
+      statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800";
+      statusEl.innerHTML = '<span class="w-2 h-2 mr-1.5 bg-amber-500 rounded-full animate-pulse"></span> Sincronizando...';
+
+      try {
+        const response = await fetch(APPS_SCRIPT_URL + '?action=getAppData');
+        appData = await response.json();
+
+        renderDashboard();
+        renderCentros();
+        renderEnvios();
+        renderStock();
+
+        statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800";
+        statusEl.innerHTML = '<span class="w-2 h-2 mr-1.5 bg-emerald-500 rounded-full"></span> Conectado a Sheets';
+      } catch (err) {
+        console.error('Error al conectar con Google Apps Script:', err);
+        statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800";
+        statusEl.innerHTML = '<span class="w-2 h-2 mr-1.5 bg-red-500 rounded-full"></span> Error de Conexión';
+      }
+    }
+
+    function renderDashboard() {
+      // Centros Dashboard
+      const centrosBody = document.getElementById('table-centros-dashboard');
+      centrosBody.innerHTML = '';
+      appData.centros.slice(0, 5).forEach(c => {
+        centrosBody.innerHTML += `
+          <tr>
+            <td class="py-2.5 px-3 font-semibold text-slate-700">${c.CENTRO_MEDICO}</td>
+            <td class="py-2.5 px-3">${c.STOCK_PACKS_25} / 25</td>
+            <td class="py-2.5 px-3 font-medium text-slate-800">${c.PAPS_RETIRADOS_ULTIMA} PAPs</td>
+            <td class="py-2.5 px-3 text-slate-500">${c.ULTIMA_VISITA}</td>
+            <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-medium">${c.ESTADO_CENTRO || 'Al Día'}</span></td>
+          </tr>
+        `;
+      });
+
+      // Envíos Recientes Dashboard
+      const enviosRecientesEl = document.getElementById('envios-recientes-dashboard');
+      enviosRecientesEl.innerHTML = '';
+      const enViaje = appData.envios.filter(e => e.ESTADO === 'En Viaje' || e.ESTADO === 'Retorno de resultados');
+      enViaje.forEach(e => {
+        enviosRecientesEl.innerHTML += `
+          <div class="p-2.5 bg-slate-50 rounded-lg border-l-4 border-blue-500">
+            <div class="flex justify-between font-semibold text-slate-700">
+              <span>${e.PROTOCOLO_RANGO}</span>
+              <span class="text-blue-600">${e.ESTADO}</span>
+            </div>
+            <p class="text-slate-500 mt-1">${e.CANTIDAD} Muestras (${e.TIPO_MUESTRA}) | Fecha: ${e.FECHA_ENVIO}</p>
+          </div>
+        `;
+      });
+    }
+
+    function renderCentros() {
+      const grid = document.getElementById('grid-centros');
+      grid.innerHTML = '';
+      appData.centros.forEach(c => {
+        grid.innerHTML += `
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
+            <div class="flex justify-between items-center">
+              <h4 class="font-bold text-cap-primary">${c.CENTRO_MEDICO}</h4>
+              <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium">Al Día</span>
+            </div>
+            <div class="text-xs text-slate-600 space-y-1">
+              <p><strong>Stock Actual Kits:</strong> ${c.STOCK_PACKS_25}/25 packs</p>
+              <p><strong>Última Visita:</strong> ${c.ULTIMA_VISITA}</p>
+              <p><strong>Último Retiro:</strong> ${c.PAPS_RETIRADOS_ULTIMA} Muestras PAP</p>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function renderEnvios() {
+      const tbody = document.getElementById('table-envios-body');
+      tbody.innerHTML = '';
+      appData.envios.forEach(e => {
+        tbody.innerHTML += `
+          <tr>
+            <td class="py-3 px-4 font-semibold text-cap-primary">${e.ID_ENVIO}<br><span class="text-slate-400 font-normal">${e.FECHA_ENVIO}</span></td>
+            <td class="py-3 px-4 font-medium">${e.TIPO_MUESTRA}</td>
+            <td class="py-3 px-4 font-mono">${e.PROTOCOLO_RANGO}</td>
+            <td class="py-3 px-4 text-center font-bold">${e.CANTIDAD}</td>
+            <td class="py-3 px-4 text-slate-600">${e.TIROIDES_CASOS || '-'}</td>
+            <td class="py-3 px-4"><span class="px-2 py-1 rounded bg-blue-100 text-blue-800 font-medium">${e.ESTADO}</span></td>
+            <td class="py-3 px-4 text-slate-500">${e.OBSERVACIONES || '-'}</td>
+          </tr>
+        `;
+      });
+    }
+
+    function renderStock() {
+      const tbody = document.getElementById('table-stock-body');
+      tbody.innerHTML = '';
+      appData.stockCentral.forEach(s => {
+        tbody.innerHTML += `
+          <tr>
+            <td class="py-3 px-4 font-semibold">${s.INSUMO}</td>
+            <td class="py-3 px-4 text-center font-bold">${s.CANTIDAD_CAJAS} cajas</td>
+            <td class="py-3 px-4 text-center">${s.UNIDADES_X_CAJA} un.</td>
+            <td class="py-3 px-4 text-center font-bold text-cap-primary">${s.TOTAL_UNIDADES} un.</td>
+            <td class="py-3 px-4"><span class="px-2 py-0.5 rounded ${s.ESTADO_STOCK === 'Suficiente' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'} font-medium">${s.ESTADO_STOCK}</span></td>
+          </tr>
+        `;
+      });
+    }
+
+    async function guardarVisita(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-guardar-visita');
+      btn.innerText = 'Guardando...';
+      btn.disabled = true;
+
+      const payload = {
+        action: 'registrarVisita',
+        centro: document.getElementById('form-centro').value,
+        papsRetirados: document.getElementById('form-paps').value,
+        packsRepuestos: document.getElementById('form-packs').value,
+        fecha: new Date().toISOString().split('T')[0]
+      };
+
+      try {
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        closeModal('modal-visita');
+        alert('Registro enviado correctamente. Actualizando panel...');
+        setTimeout(cargarDatos, 1500);
+      } catch (err) {
+        alert('Ocurrió un error al guardar los datos.');
+      } finally {
+        btn.innerText = 'Guardar Registro';
+        btn.disabled = false;
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.add('hidden');
+        el.classList.remove('block');
+      });
+
+      document.getElementById('tab-' + tabId).classList.remove('hidden');
+      document.getElementById('tab-' + tabId).classList.add('block');
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-cap-dark', 'border-white');
+        btn.classList.add('border-transparent');
+      });
+
+      const activeBtn = document.getElementById('nav-' + tabId);
+      activeBtn.classList.add('bg-cap-dark', 'border-white');
+      activeBtn.classList.remove('border-transparent');
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+      document.getElementById(id).classList.add('flex');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+      document.getElementById(id).classList.remove('flex');
+    }
+  </script>
+</body>
+</html>
