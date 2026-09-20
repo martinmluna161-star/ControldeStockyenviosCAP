@@ -4,11 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CAP - Centro de Anatomía Patológica | Tablero de Gestión</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Remix Icons CDN -->
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -18,18 +15,9 @@
       theme: {
         extend: {
           colors: {
-            cap: {
-              primary: '#0B5582',
-              dark: '#083E60',
-              light: '#2C80B4',
-              accent: '#EBF3F8',
-              bg: '#F4F7F9'
-            }
+            cap: { primary: '#0B5582', dark: '#083E60', light: '#2C80B4', accent: '#EBF3F8', bg: '#F4F7F9' }
           },
-          fontFamily: {
-            serif: ['Cinzel', 'Georgia', 'serif'],
-            sans: ['Inter', 'sans-serif']
-          }
+          fontFamily: { serif: ['Cinzel', 'Georgia', 'serif'], sans: ['Inter', 'sans-serif'] }
         }
       }
     }
@@ -37,7 +25,7 @@
 </head>
 <body class="bg-cap-bg font-sans text-slate-800 antialiased min-h-screen flex flex-col">
 
-  <!-- TOP HEADER / BRANDING -->
+  <!-- TOP HEADER -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-3">
@@ -53,6 +41,9 @@
         <span id="api-status" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
           <span class="w-2 h-2 mr-1.5 bg-amber-500 rounded-full animate-pulse"></span> Cargando Backend...
         </span>
+        <button id="btn-login-header" onclick="openModal('modal-login')" class="bg-amber-500 text-white px-3 py-1.5 rounded-lg hover:bg-amber-600 transition text-xs font-medium flex items-center">
+          <i class="ri-lock-line mr-1"></i> Iniciar Sesión
+        </button>
         <button onclick="cargarDatos()" class="bg-cap-primary text-white px-3 py-1.5 rounded-lg hover:bg-cap-dark transition text-xs font-medium flex items-center">
           <i class="ri-refresh-line mr-1"></i> Sincronizar
         </button>
@@ -60,7 +51,7 @@
     </div>
   </header>
 
-  <!-- MAIN NAVIGATION -->
+  <!-- NAVIGATION -->
   <nav class="bg-cap-primary text-white shadow-md">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 sm:space-x-4 overflow-x-auto">
       <button onclick="switchTab('dashboard')" id="nav-dashboard" class="tab-btn py-3 px-4 text-xs sm:text-sm font-medium border-b-2 border-white flex items-center space-x-2 whitespace-nowrap bg-cap-dark">
@@ -78,38 +69,38 @@
     </div>
   </nav>
 
-  <!-- CONTENT CONTAINER -->
+  <!-- CONTENT -->
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
 
     <!-- TAB 1: DASHBOARD -->
     <section id="tab-dashboard" class="tab-content block space-y-6">
       
-      <!-- KPI Cards -->
+      <!-- KPIs -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
           <div class="flex justify-between items-start">
             <div>
-              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">PAPs Recolectados (Últ. Visita)</p>
-              <h3 id="kpi-paps" class="text-2xl font-bold text-slate-800 mt-1">104</h3>
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Muestras Acumuladas en Lab</p>
+              <h3 id="kpi-acumuladas" class="text-2xl font-bold text-cap-primary mt-1">0 PAPs</h3>
             </div>
             <div class="p-2 bg-cap-accent rounded-lg text-cap-primary">
-              <i class="ri-microscope-line text-xl"></i>
+              <i class="ri-flask-line text-xl"></i>
             </div>
           </div>
-          <p class="text-xs text-emerald-600 mt-2 font-medium"><i class="ri-arrow-up-line"></i> 9 Centros visitados (16/09/2026)</p>
+          <p class="text-xs text-slate-500 mt-2">Recolectadas pendientes de envío</p>
         </div>
 
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
           <div class="flex justify-between items-start">
             <div>
               <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Muestras En Viaje (Bs. As.)</p>
-              <h3 id="kpi-envios" class="text-2xl font-bold text-amber-600 mt-1">174</h3>
+              <h3 id="kpi-envios" class="text-2xl font-bold text-amber-600 mt-1">0</h3>
             </div>
             <div class="p-2 bg-amber-50 rounded-lg text-amber-600">
               <i class="ri-truck-line text-xl"></i>
             </div>
           </div>
-          <p class="text-xs text-slate-500 mt-2">104 PAPs + 70 Cápsulas Tacos</p>
+          <p class="text-xs text-slate-500 mt-2">PAPs y Tacos en tránsito</p>
         </div>
 
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
@@ -139,58 +130,61 @@
         </div>
       </div>
 
-      <!-- Main Visual Grids -->
+      <!-- MAIN GRIDS -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- Estado de Centros Médicos -->
-        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="font-bold text-slate-800 text-base flex items-center">
-              <i class="ri-map-pin-2-line text-cap-primary mr-2"></i> Estado Reciente Centros Médicos
-            </h3>
-            <span class="text-xs text-slate-500">Visita: 16/09/2026</span>
+        <!-- Muestras Acumuladas en Laboratorio -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
+          <div class="flex justify-between items-center border-b pb-3">
+            <div>
+              <h3 class="font-bold text-slate-800 text-base flex items-center">
+                <i class="ri-test-tube-line text-cap-primary mr-2"></i> Muestras en Guardia / Pendientes de Despacho
+              </h3>
+              <p class="text-xs text-slate-500">Muestras recolectadas de visitas previas listas para armar paquete a Bs. As.</p>
+            </div>
+            <button onclick="prepararEnvioDesdeAcumulado()" class="admin-only hidden bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-emerald-700 font-medium flex items-center">
+              <i class="ri-send-plane-fill mr-1"></i> Consolidar en Envío
+            </button>
           </div>
+
           <div class="overflow-x-auto">
             <table class="w-full text-xs text-left">
               <thead class="bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider">
                 <tr>
+                  <th class="py-2.5 px-3">Fecha Recolección</th>
                   <th class="py-2.5 px-3">Centro Médico</th>
-                  <th class="py-2.5 px-3">Stock Packs</th>
-                  <th class="py-2.5 px-3">Retiro Última Visita</th>
-                  <th class="py-2.5 px-3">Última Visita</th>
-                  <th class="py-2.5 px-3">Estado</th>
+                  <th class="py-2.5 px-3 text-center">PAPs Retirados</th>
+                  <th class="py-2.5 px-3">Estado Interno</th>
                 </tr>
               </thead>
-              <tbody id="table-centros-dashboard" class="divide-y divide-slate-100">
+              <tbody id="table-pendientes-body" class="divide-y divide-slate-100">
                 <!-- Se puebla dinámicamente -->
               </tbody>
             </table>
           </div>
         </div>
 
-        <!-- Acciones Rápidas & Envíos Recientes -->
+        <!-- Acciones Rápidas -->
         <div class="space-y-6">
           <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
             <h3 class="font-bold text-slate-800 text-base mb-3 flex items-center">
               <i class="ri-add-circle-line text-cap-primary mr-2"></i> Operaciones Rápidas
             </h3>
             <div class="space-y-2">
-              <button onclick="openModal('modal-visita')" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:bg-cap-accent transition flex items-center justify-between group">
+              <button onclick="abrirModalVisitaSegura()" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:bg-cap-accent transition flex items-center justify-between group">
                 <div class="flex items-center space-x-2">
                   <i class="ri-file-add-line text-cap-primary"></i>
                   <span class="text-xs font-semibold text-slate-700 group-hover:text-cap-primary">Registrar Recolección en Centro</span>
                 </div>
                 <i class="ri-arrow-right-s-line text-slate-400"></i>
               </button>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-            <h3 class="font-bold text-slate-800 text-base mb-3 flex items-center">
-              <i class="ri-history-line text-cap-primary mr-2"></i> Envíos en Cursada
-            </h3>
-            <div id="envios-recientes-dashboard" class="space-y-3 text-xs">
-              <!-- Se puebla dinámicamente -->
+              <button onclick="abrirModalEnvioSeguro()" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:bg-cap-accent transition flex items-center justify-between group">
+                <div class="flex items-center space-x-2">
+                  <i class="ri-plane-line text-cap-primary"></i>
+                  <span class="text-xs font-semibold text-slate-700 group-hover:text-cap-primary">Nuevo Envío a Bs. As.</span>
+                </div>
+                <i class="ri-arrow-right-s-line text-slate-400"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -198,21 +192,18 @@
       </div>
     </section>
 
-    <!-- TAB 2: RUTA CENTROS MÉDICOS -->
+    <!-- TAB 2: RUTA CENTROS -->
     <section id="tab-centros" class="tab-content hidden space-y-6">
       <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
         <div>
           <h3 class="font-bold text-lg text-slate-800">Control de Centros Médicos (Packs de 25 PAPs)</h3>
           <p class="text-xs text-slate-500">Planilla de reposición e insumos en los 9 puntos de recolección semanal.</p>
         </div>
-        <button onclick="openModal('modal-visita')" class="bg-cap-primary text-white text-xs px-4 py-2 rounded-lg font-medium hover:bg-cap-dark flex items-center space-x-1">
+        <button onclick="abrirModalVisitaSegura()" class="bg-cap-primary text-white text-xs px-4 py-2 rounded-lg font-medium hover:bg-cap-dark flex items-center space-x-1">
           <i class="ri-add-line"></i> <span>Registrar Visita / Planilla</span>
         </button>
       </div>
-
-      <div id="grid-centros" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Tarjetas dinámicas -->
-      </div>
+      <div id="grid-centros" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
     </section>
 
     <!-- TAB 3: ENVÍOS A BUENOS AIRES -->
@@ -220,8 +211,11 @@
       <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
         <div>
           <h3 class="font-bold text-lg text-slate-800">Trazabilidad de Envíos a Buenos Aires</h3>
-          <p class="text-xs text-slate-500">Seguimiento de PAPs y Tacos en los 7 estados de flujo.</p>
+          <p class="text-xs text-slate-500">Gestión de estados, protocolos y recepción de resultados.</p>
         </div>
+        <button onclick="abrirModalEnvioSeguro()" class="bg-cap-primary text-white text-xs px-4 py-2 rounded-lg font-medium hover:bg-cap-dark flex items-center space-x-1">
+          <i class="ri-add-line"></i> <span>Nuevo Envío a Bs. As.</span>
+        </button>
       </div>
 
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
@@ -229,22 +223,20 @@
           <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
             <tr>
               <th class="py-3 px-4">ID / Fecha</th>
-              <th class="py-3 px-4">Tipo</th>
+              <th class="py-3 px-4">Tipo Muestra</th>
               <th class="py-3 px-4">Protocolo Rango</th>
               <th class="py-3 px-4 text-center">Cantidad</th>
               <th class="py-3 px-4">Tiroides / Casos</th>
-              <th class="py-3 px-4">Estado</th>
+              <th class="py-3 px-4">Estado (Editar)</th>
               <th class="py-3 px-4">Observaciones</th>
             </tr>
           </thead>
-          <tbody id="table-envios-body" class="divide-y divide-slate-100">
-            <!-- Se puebla dinámicamente -->
-          </tbody>
+          <tbody id="table-envios-body" class="divide-y divide-slate-100"></tbody>
         </table>
       </div>
     </section>
 
-    <!-- TAB 4: STOCK CENTRAL INSUMOS -->
+    <!-- TAB 4: STOCK CENTRAL -->
     <section id="tab-stock" class="tab-content hidden space-y-6">
       <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
         <div>
@@ -252,7 +244,6 @@
           <p class="text-xs text-slate-500">Balance de existencias y unidades disponibles.</p>
         </div>
       </div>
-
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <table class="w-full text-xs text-left">
           <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
@@ -264,14 +255,29 @@
               <th class="py-3 px-4">Estado</th>
             </tr>
           </thead>
-          <tbody id="table-stock-body" class="divide-y divide-slate-100">
-            <!-- Se puebla dinámicamente -->
-          </tbody>
+          <tbody id="table-stock-body" class="divide-y divide-slate-100"></tbody>
         </table>
       </div>
     </section>
 
   </main>
+
+  <!-- MODAL: LOGIN DE ACCESO -->
+  <div id="modal-login" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-xs w-full p-6 space-y-4 text-center">
+      <div class="p-3 bg-cap-accent rounded-full w-12 h-12 flex items-center justify-center mx-auto text-cap-primary">
+        <i class="ri-lock-password-line text-2xl"></i>
+      </div>
+      <div>
+        <h3 class="font-bold text-slate-800 text-base">Acceso Autorizado</h3>
+        <p class="text-xs text-slate-500 mt-1">Ingresa el PIN de seguridad del laboratorio para habilitar cambios.</p>
+      </div>
+      <form onsubmit="ejecutarLogin(event)" class="space-y-3">
+        <input type="password" id="input-pin" placeholder="Ingresa PIN" required class="w-full text-center tracking-widest text-lg font-bold border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
+        <button type="submit" class="w-full py-2 bg-cap-primary text-white text-xs font-semibold rounded-lg hover:bg-cap-dark">Validar y Entrar</button>
+      </form>
+    </div>
+  </div>
 
   <!-- MODAL: REGISTRAR RECOLECCIÓN EN CENTRO -->
   <div id="modal-visita" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
@@ -280,52 +286,116 @@
         <h3 class="font-bold text-slate-800 text-base">Registrar Recolección / Reposición</h3>
         <button onclick="closeModal('modal-visita')" class="text-slate-400 hover:text-slate-600"><i class="ri-close-line text-xl"></i></button>
       </div>
-
       <form id="form-visita" class="space-y-3 text-xs" onsubmit="guardarVisita(event)">
         <div>
           <label class="block font-semibold text-slate-700 mb-1">Centro Médico</label>
           <select id="form-centro" class="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-cap-primary">
-            <option>Cerhu</option>
-            <option>Ifem</option>
-            <option>IMT</option>
-            <option>Centro Bolívar</option>
-            <option>Centro Rivadavia</option>
-            <option>Medici</option>
-            <option>Medicina para la Mujer</option>
-            <option>Eticos</option>
-            <option>Centro Medico Trinidad</option>
+            <option>Cerhu</option><option>Ifem</option><option>IMT</option>
+            <option>Centro Bolívar</option><option>Centro Rivadavia</option><option>Medici</option>
+            <option>Medicina para la Mujer</option><option>Eticos</option><option>Centro Medico Trinidad</option>
           </select>
         </div>
-
         <div>
           <label class="block font-semibold text-slate-700 mb-1">Muestras PAPs Retiradas</label>
           <input type="number" id="form-paps" placeholder="Ej: 12" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
         </div>
-
         <div>
           <label class="block font-semibold text-slate-700 mb-1">Packs de Reposición Entregados (x25)</label>
           <input type="number" id="form-packs" value="1" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
         </div>
-
         <div class="pt-3 flex justify-end space-x-2">
           <button type="button" onclick="closeModal('modal-visita')" class="px-4 py-2 border rounded-lg text-slate-600 hover:bg-slate-100">Cancelar</button>
-          <button type="submit" id="btn-guardar-visita" class="px-4 py-2 bg-cap-primary text-white rounded-lg font-medium hover:bg-cap-dark">Guardar Registro</button>
+          <button type="submit" id="btn-guardar-visita" class="px-4 py-2 bg-cap-primary text-white rounded-lg font-medium hover:bg-cap-dark">Guardar en Laboratorio</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- JAVASCRIPT CONEXIÓN JSONP BACKEND APPS SCRIPT -->
-  <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxG3qnSBxijNATeBQGUcYaW5I3Jwlr9TOp5yh_E17lSwJHN-AUje7ROfwrw_NY0Avin/exec';
+  <!-- MODAL: NUEVO ENVÍO A BS. AS. -->
+  <div id="modal-envio" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-slate-800 text-base">Registrar Nuevo Envío a Bs. As.</h3>
+        <button onclick="closeModal('modal-envio')" class="text-slate-400 hover:text-slate-600"><i class="ri-close-line text-xl"></i></button>
+      </div>
+      <form class="space-y-3 text-xs" onsubmit="guardarNuevoEnvio(event)">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Tipo de Muestra</label>
+          <select id="envio-tipo" class="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-cap-primary">
+            <option value="PAPs / Citología">PAPs / Citología</option>
+            <option value="Tacos / Biopsias">Tacos / Biopsias</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Rango de Protocolos</label>
+          <input type="text" id="envio-protocolo" placeholder="Ej: 26P-3622 al 26P-3700" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Cantidad de Muestras</label>
+          <input type="number" id="envio-cantidad" placeholder="Ej: 80" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Casos Tiroides / Adicionales</label>
+          <input type="text" id="envio-tiroides" placeholder="Ej: 26C-117 al 26C-118" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Observaciones / Transporte</label>
+          <input type="text" id="envio-obs" placeholder="Ej: Enviado vía comisionista" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
+        </div>
+        <div class="pt-3 flex justify-end space-x-2">
+          <button type="button" onclick="closeModal('modal-envio')" class="px-4 py-2 border rounded-lg text-slate-600 hover:bg-slate-100">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-cap-primary text-white rounded-lg font-medium hover:bg-cap-dark">Despachar Envío</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    let appData = { envios: [], centros: [], stockCentral: [] };
+  <!-- JAVASCRIPT -->
+  <script>
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzK7A_EjMVDA3LhaKpmvzURcmt5OxsDaGwWlZhz-tHapd37n3YPb_pmjP-stRgB8o8e/exec';
+
+    const ESTADOS_ENVIO = [
+      "En Laboratorio (Procesando)",
+      "Procesado para retiro del Comisionista",
+      "En Viaje",
+      "En Laboratorio de Destino",
+      "Procesado en Destino",
+      "Retorno de resultados",
+      "Archivado"
+    ];
+
+    let appData = { envios: [], centros: [], stockCentral: [], pendientes: [] };
+    let userPin = localStorage.getItem('cap_admin_pin') || null;
 
     document.addEventListener('DOMContentLoaded', () => {
+      actualizarEstadoUI();
       cargarDatos();
     });
 
-    // CARGA DE DATOS VÍA INYECCIÓN DINÁMICA DE SCRIPT (JSONP - Evita CORS 100%)
+    function actualizarEstadoUI() {
+      const btnHeader = document.getElementById('btn-login-header');
+      if (userPin) {
+        btnHeader.className = "bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center";
+        btnHeader.innerHTML = '<i class="ri-shield-check-line mr-1"></i> Sesión Activa';
+        document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+      } else {
+        btnHeader.className = "bg-amber-500 text-white px-3 py-1.5 rounded-lg hover:bg-amber-600 text-xs font-medium flex items-center";
+        btnHeader.innerHTML = '<i class="ri-lock-line mr-1"></i> Iniciar Sesión';
+        document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
+      }
+    }
+
+    function ejecutarLogin(e) {
+      e.preventDefault();
+      const pin = document.getElementById('input-pin').value;
+      userPin = pin;
+      localStorage.setItem('cap_admin_pin', pin);
+      closeModal('modal-login');
+      actualizarEstadoUI();
+      renderEnvios();
+      alert('Autenticación configurada.');
+    }
+
     function cargarDatos() {
       const statusEl = document.getElementById('api-status');
       statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800";
@@ -346,10 +416,8 @@
       document.body.appendChild(script);
     }
 
-    // CALLBACK INVOCADO DESDE APPS SCRIPT
     function procesarRespuestaJSONP(data) {
       appData = data;
-
       renderDashboard();
       renderCentros();
       renderEnvios();
@@ -361,44 +429,36 @@
     }
 
     function renderDashboard() {
-      const centrosBody = document.getElementById('table-centros-dashboard');
-      centrosBody.innerHTML = '';
-      if (appData.centros && appData.centros.length) {
-        appData.centros.slice(0, 5).forEach(c => {
-          centrosBody.innerHTML += `
+      let totalPendiente = 0;
+      const tbodyPendientes = document.getElementById('table-pendientes-body');
+      tbodyPendientes.innerHTML = '';
+
+      if (appData.pendientes && appData.pendientes.length) {
+        appData.pendientes.forEach(p => {
+          totalPendiente += Number(p.CANTIDAD_PAPS) || 0;
+          tbodyPendientes.innerHTML += `
             <tr>
-              <td class="py-2.5 px-3 font-semibold text-slate-700">${c.CENTRO_MEDICO}</td>
-              <td class="py-2.5 px-3">${c.STOCK_PACKS_25} / 25</td>
-              <td class="py-2.5 px-3 font-medium text-slate-800">${c.PAPS_RETIRADOS_ULTIMA} PAPs</td>
-              <td class="py-2.5 px-3 text-slate-500">${c.ULTIMA_VISITA}</td>
-              <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-medium">${c.ESTADO_CENTRO || 'Al Día'}</span></td>
+              <td class="py-2.5 px-3 text-slate-600">${p.FECHA_RETIRO}</td>
+              <td class="py-2.5 px-3 font-semibold text-slate-800">${p.CENTRO_MEDICO}</td>
+              <td class="py-2.5 px-3 text-center font-bold text-cap-primary">${p.CANTIDAD_PAPS}</td>
+              <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-medium">${p.ESTADO_ACTUAL}</span></td>
             </tr>
           `;
         });
+      } else {
+        tbodyPendientes.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-400">Sin muestras pendientes en laboratorio.</td></tr>`;
       }
 
-      const enviosRecientesEl = document.getElementById('envios-recientes-dashboard');
-      enviosRecientesEl.innerHTML = '';
-      if (appData.envios && appData.envios.length) {
-        const enViaje = appData.envios.filter(e => e.ESTADO === 'En Viaje' || e.ESTADO === 'Retorno de resultados');
-        enViaje.forEach(e => {
-          enviosRecientesEl.innerHTML += `
-            <div class="p-2.5 bg-slate-50 rounded-lg border-l-4 border-blue-500">
-              <div class="flex justify-between font-semibold text-slate-700">
-                <span>${e.PROTOCOLO_RANGO}</span>
-                <span class="text-blue-600">${e.ESTADO}</span>
-              </div>
-              <p class="text-slate-500 mt-1">${e.CANTIDAD} Muestras (${e.TIPO_MUESTRA}) | Fecha: ${e.FECHA_ENVIO}</p>
-            </div>
-          `;
-        });
-      }
+      document.getElementById('kpi-acumuladas').innerText = `${totalPendiente} PAPs`;
+      
+      const enTransito = appData.envios ? appData.envios.filter(e => e.ESTADO === 'En Viaje').reduce((acc, curr) => acc + (Number(curr.CANTIDAD) || 0), 0) : 0;
+      document.getElementById('kpi-envios').innerText = `${enTransito} muestras`;
     }
 
     function renderCentros() {
       const grid = document.getElementById('grid-centros');
       grid.innerHTML = '';
-      if (appData.centros && appData.centros.length) {
+      if (appData.centros) {
         appData.centros.forEach(c => {
           grid.innerHTML += `
             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
@@ -407,9 +467,9 @@
                 <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium">Al Día</span>
               </div>
               <div class="text-xs text-slate-600 space-y-1">
-                <p><strong>Stock Actual Kits:</strong> ${c.STOCK_PACKS_25}/25 packs</p>
+                <p><strong>Stock Kits:</strong> ${c.STOCK_PACKS_25}/25 packs</p>
                 <p><strong>Última Visita:</strong> ${c.ULTIMA_VISITA}</p>
-                <p><strong>Último Retiro:</strong> ${c.PAPS_RETIRADOS_ULTIMA} Muestras PAP</p>
+                <p><strong>Último Retiro:</strong> ${c.PAPS_RETIRADOS_ULTIMA} PAPs</p>
               </div>
             </div>
           `;
@@ -420,8 +480,15 @@
     function renderEnvios() {
       const tbody = document.getElementById('table-envios-body');
       tbody.innerHTML = '';
-      if (appData.envios && appData.envios.length) {
+      if (appData.envios) {
         appData.envios.forEach(e => {
+          let estadoHTML = `<span class="px-2 py-1 rounded bg-blue-100 text-blue-800 font-medium">${e.ESTADO}</span>`;
+          
+          if (userPin) {
+            let options = ESTADOS_ENVIO.map(st => `<option value="${st}" ${st === e.ESTADO ? 'selected' : ''}>${st}</option>`).join('');
+            estadoHTML = `<select onchange="cambiarEstadoEnvio('${e.ID_ENVIO}', this.value)" class="border rounded px-2 py-1 bg-slate-50 focus:ring-1 focus:ring-cap-primary">${options}</select>`;
+          }
+
           tbody.innerHTML += `
             <tr>
               <td class="py-3 px-4 font-semibold text-cap-primary">${e.ID_ENVIO}<br><span class="text-slate-400 font-normal">${e.FECHA_ENVIO}</span></td>
@@ -429,7 +496,7 @@
               <td class="py-3 px-4 font-mono">${e.PROTOCOLO_RANGO}</td>
               <td class="py-3 px-4 text-center font-bold">${e.CANTIDAD}</td>
               <td class="py-3 px-4 text-slate-600">${e.TIROIDES_CASOS || '-'}</td>
-              <td class="py-3 px-4"><span class="px-2 py-1 rounded bg-blue-100 text-blue-800 font-medium">${e.ESTADO}</span></td>
+              <td class="py-3 px-4">${estadoHTML}</td>
               <td class="py-3 px-4 text-slate-500">${e.OBSERVACIONES || '-'}</td>
             </tr>
           `;
@@ -440,7 +507,7 @@
     function renderStock() {
       const tbody = document.getElementById('table-stock-body');
       tbody.innerHTML = '';
-      if (appData.stockCentral && appData.stockCentral.length) {
+      if (appData.stockCentral) {
         appData.stockCentral.forEach(s => {
           tbody.innerHTML += `
             <tr>
@@ -455,20 +522,51 @@
       }
     }
 
+    function abrirModalVisitaSegura() {
+      if (!userPin) return openModal('modal-login');
+      openModal('modal-visita');
+    }
+
+    function abrirModalEnvioSeguro() {
+      if (!userPin) return openModal('modal-login');
+      openModal('modal-envio');
+    }
+
     async function guardarVisita(e) {
       e.preventDefault();
-      const btn = document.getElementById('btn-guardar-visita');
-      btn.innerText = 'Guardando...';
-      btn.disabled = true;
-
       const payload = {
         action: 'registrarVisita',
+        pin: userPin,
         centro: document.getElementById('form-centro').value,
         papsRetirados: document.getElementById('form-paps').value,
         packsRepuestos: document.getElementById('form-packs').value,
         fecha: new Date().toISOString().split('T')[0]
       };
+      await enviarAccionPOST(payload, 'modal-visita');
+    }
 
+    async function guardarNuevoEnvio(e) {
+      e.preventDefault();
+      const payload = {
+        action: 'crearEnvio',
+        pin: userPin,
+        tipoMuestra: document.getElementById('envio-tipo').value,
+        protocoloRango: document.getElementById('envio-protocolo').value,
+        cantidad: document.getElementById('envio-cantidad').value,
+        tiroidesCasos: document.getElementById('envio-tiroides').value,
+        observaciones: document.getElementById('envio-obs').value,
+        fecha: new Date().toISOString().split('T')[0]
+      };
+      await enviarAccionPOST(payload, 'modal-envio');
+    }
+
+    async function cambiarEstadoEnvio(idEnvio, nuevoEstado) {
+      if (!userPin) return openModal('modal-login');
+      const payload = { action: 'actualizarEstado', pin: userPin, idEnvio: idEnvio, nuevoEstado: nuevoEstado };
+      await enviarAccionPOST(payload, null);
+    }
+
+    async function enviarAccionPOST(payload, modalId) {
       try {
         await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
@@ -476,35 +574,26 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-
-        closeModal('modal-visita');
-        alert('Registro enviado correctamente. Sincronizando datos...');
+        if (modalId) closeModal(modalId);
+        alert('Operación procesada. Sincronizando tablero...');
         setTimeout(cargarDatos, 1500);
       } catch (err) {
-        alert('Ocurrió un error al guardar los datos.');
-      } finally {
-        btn.innerText = 'Guardar Registro';
-        btn.disabled = false;
+        alert('Error al procesar la solicitud.');
       }
     }
 
+    function prepararEnvioDesdeAcumulado() {
+      let total = appData.pendientes ? appData.pendientes.reduce((acc, curr) => acc + (Number(curr.CANTIDAD_PAPS) || 0), 0) : 0;
+      document.getElementById('envio-tipo').value = 'PAPs / Citología';
+      document.getElementById('envio-cantidad').value = total;
+      abrirModalEnvioSeguro();
+    }
+
     function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => {
-        el.classList.add('hidden');
-        el.classList.remove('block');
-      });
-
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.getElementById('tab-' + tabId).classList.remove('hidden');
-      document.getElementById('tab-' + tabId).classList.add('block');
-
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('bg-cap-dark', 'border-white');
-        btn.classList.add('border-transparent');
-      });
-
-      const activeBtn = document.getElementById('nav-' + tabId);
-      activeBtn.classList.add('bg-cap-dark', 'border-white');
-      activeBtn.classList.remove('border-transparent');
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('bg-cap-dark', 'border-white'));
+      document.getElementById('nav-' + tabId).classList.add('bg-cap-dark', 'border-white');
     }
 
     function openModal(id) {
