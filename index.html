@@ -74,8 +74,6 @@
 
     <!-- TAB 1: DASHBOARD -->
     <section id="tab-dashboard" class="tab-content block space-y-6">
-      
-      <!-- KPIs -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
           <div class="flex justify-between items-start">
@@ -130,10 +128,7 @@
         </div>
       </div>
 
-      <!-- MAIN GRIDS -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- Muestras Acumuladas en Laboratorio -->
         <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-4">
           <div class="flex justify-between items-center border-b pb-3">
             <div>
@@ -162,7 +157,6 @@
           </div>
         </div>
 
-        <!-- Acciones Rápidas -->
         <div class="space-y-6">
           <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
             <h3 class="font-bold text-slate-800 text-base mb-3 flex items-center">
@@ -193,7 +187,6 @@
             </div>
           </div>
         </div>
-
       </div>
     </section>
 
@@ -227,7 +220,8 @@
         <table class="w-full text-xs text-left">
           <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
             <tr>
-              <th class="py-3 px-4">ID / Fecha</th>
+              <th class="py-3 px-4">ID Envío</th>
+              <th class="py-3 px-4">Fecha Envío</th>
               <th class="py-3 px-4">Tipo Muestra</th>
               <th class="py-3 px-4">Protocolo Rango</th>
               <th class="py-3 px-4 text-center">Cantidad</th>
@@ -241,7 +235,7 @@
       </div>
     </section>
 
-    <!-- TAB 4: STOCK CENTRAL INSUMOS -->
+    <!-- TAB 4: STOCK CENTRAL -->
     <section id="tab-stock" class="tab-content hidden space-y-6">
       <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
         <div>
@@ -268,7 +262,6 @@
         </table>
       </div>
 
-      <!-- Tabla de Auditoría de Movimientos de Stock -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-3">
         <h4 class="font-bold text-slate-800 text-sm flex items-center">
           <i class="ri-history-line text-cap-primary mr-2"></i> Auditoría de Movimientos de Stock Central
@@ -454,6 +447,19 @@
       cargarDatos();
     });
 
+    // Función auxiliar para formatear fechas a DD/MM/YYYY limpia
+    function formatearFechaLimpia(strFecha) {
+      if (!strFecha) return '-';
+      if (strFecha.includes('T')) {
+        strFecha = strFecha.split('T')[0];
+      }
+      const partes = strFecha.split('-');
+      if (partes.length === 3) {
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
+      }
+      return strFecha;
+    }
+
     function actualizarEstadoUI() {
       const btnHeader = document.getElementById('btn-login-header');
       if (userPin) {
@@ -521,7 +527,7 @@
           totalPendiente += Number(p.CANTIDAD_PAPS) || 0;
           tbodyPendientes.innerHTML += `
             <tr>
-              <td class="py-2.5 px-3 text-slate-600">${p.FECHA_RETIRO}</td>
+              <td class="py-2.5 px-3 text-slate-600 font-medium">${formatearFechaLimpia(p.FECHA_RETIRO)}</td>
               <td class="py-2.5 px-3 font-semibold text-slate-800">${p.CENTRO_MEDICO}</td>
               <td class="py-2.5 px-3 text-center font-bold text-cap-primary">${p.CANTIDAD_PAPS}</td>
               <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-medium">${p.ESTADO_ACTUAL}</span></td>
@@ -553,7 +559,7 @@
               <div class="text-xs text-slate-600 space-y-1">
                 <p><strong>Stock Packs:</strong> ${c.STOCK_PACKS_25} ${c.STOCK_PACKS_25 > 0 ? '/25 packs' : ''}</p>
                 <p><strong>Modo:</strong> ${c.MODO_RETIRO || 'Visita Semanal'}</p>
-                <p><strong>Última Visita/Retiro:</strong> ${c.ULTIMA_VISITA} (${c.PAPS_RETIRADOS_ULTIMA} PAPs)</p>
+                <p><strong>Última Visita/Retiro:</strong> ${formatearFechaLimpia(c.ULTIMA_VISITA)} (${c.PAPS_RETIRADOS_ULTIMA} PAPs)</p>
               </div>
             </div>
           `;
@@ -561,6 +567,7 @@
       }
     }
 
+    // RENDER TABLA ENVÍOS A BS. AS. CON COLUMNAS SEPARADAS PARA ID Y FECHA
     function renderEnvios() {
       const tbody = document.getElementById('table-envios-body');
       tbody.innerHTML = '';
@@ -575,7 +582,8 @@
 
           tbody.innerHTML += `
             <tr>
-              <td class="py-3 px-4 font-semibold text-cap-primary">${e.ID_ENVIO}<br><span class="text-slate-400 font-normal">${e.FECHA_ENVIO}</span></td>
+              <td class="py-3 px-4 font-semibold text-cap-primary">${e.ID_ENVIO}</td>
+              <td class="py-3 px-4 font-medium text-slate-700 whitespace-nowrap">${formatearFechaLimpia(e.FECHA_ENVIO)}</td>
               <td class="py-3 px-4 font-medium">${e.TIPO_MUESTRA}</td>
               <td class="py-3 px-4 font-mono">${e.PROTOCOLO_RANGO}</td>
               <td class="py-3 px-4 text-center font-bold">${e.CANTIDAD}</td>
@@ -614,7 +622,7 @@
           let badge = m.CANTIDAD < 0 ? 'text-red-600 font-bold' : 'text-emerald-600 font-bold';
           tbody.innerHTML += `
             <tr>
-              <td class="py-2.5 px-3 text-slate-500">${m.FECHA}</td>
+              <td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${formatearFechaLimpia(m.FECHA)}</td>
               <td class="py-2.5 px-3 font-semibold text-slate-700">${m.INSUMO_O_CENTRO}</td>
               <td class="py-2.5 px-3">${m.TIPO_MOVIMIENTO}</td>
               <td class="py-2.5 px-3 text-center ${badge}">${m.CANTIDAD > 0 ? '+' + m.CANTIDAD : m.CANTIDAD}</td>
