@@ -58,7 +58,7 @@
         <i class="ri-dashboard-line"></i> <span>Dashboard General</span>
       </button>
       <button onclick="switchTab('centros')" id="nav-centros" class="tab-btn py-3 px-4 text-xs sm:text-sm font-medium border-b-2 border-transparent hover:bg-cap-light/30 flex items-center space-x-2 whitespace-nowrap">
-        <i class="ri-hospital-line"></i> <span>Ruta Centros Médicos (9)</span>
+        <i class="ri-hospital-line"></i> <span>Centros Médicos (13)</span>
       </button>
       <button onclick="switchTab('envios')" id="nav-envios" class="tab-btn py-3 px-4 text-xs sm:text-sm font-medium border-b-2 border-transparent hover:bg-cap-light/30 flex items-center space-x-2 whitespace-nowrap">
         <i class="ri-plane-line"></i> <span>Envíos a Bs. As.</span>
@@ -87,7 +87,7 @@
               <i class="ri-flask-line text-xl"></i>
             </div>
           </div>
-          <p class="text-xs text-slate-500 mt-2">Recolectadas pendientes de envío</p>
+          <p class="text-xs text-slate-500 mt-2">Listas para consolidar envío</p>
         </div>
 
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
@@ -106,27 +106,27 @@
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
           <div class="flex justify-between items-start">
             <div>
-              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Packs en Centros</p>
-              <h3 class="text-2xl font-bold text-slate-800 mt-1">225 unidades</h3>
+              <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Centros Activos</p>
+              <h3 class="text-2xl font-bold text-slate-800 mt-1">13 Sedes</h3>
             </div>
             <div class="p-2 bg-blue-50 rounded-lg text-cap-light">
               <i class="ri-building-4-line text-xl"></i>
             </div>
           </div>
-          <p class="text-xs text-slate-500 mt-2">25 packs en cada uno de los 9 centros</p>
+          <p class="text-xs text-slate-500 mt-2">Incluye San Luis y Villa Mercedes</p>
         </div>
 
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
           <div class="flex justify-between items-start">
             <div>
               <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Estado Insumos CAP</p>
-              <h3 class="text-2xl font-bold text-emerald-600 mt-1">Óptimo</h3>
+              <h3 class="text-2xl font-bold text-emerald-600 mt-1">Controlado</h3>
             </div>
             <div class="p-2 bg-emerald-50 rounded-lg text-emerald-600">
               <i class="ri-checkbox-circle-line text-xl"></i>
             </div>
           </div>
-          <p class="text-xs text-slate-500 mt-2">Vidrios: 2.750 | Cepillos: 1.800</p>
+          <p class="text-xs text-slate-500 mt-2">Trazabilidad de stock activo</p>
         </div>
       </div>
 
@@ -138,9 +138,9 @@
           <div class="flex justify-between items-center border-b pb-3">
             <div>
               <h3 class="font-bold text-slate-800 text-base flex items-center">
-                <i class="ri-test-tube-line text-cap-primary mr-2"></i> Muestras en Guardia / Pendientes de Despacho
+                <i class="ri-test-tube-line text-cap-primary mr-2"></i> Muestras en Laboratorio (Pendientes de Envío)
               </h3>
-              <p class="text-xs text-slate-500">Muestras recolectadas de visitas previas listas para armar paquete a Bs. As.</p>
+              <p class="text-xs text-slate-500">Retiros acumulados de múltiples días listos para despachar juntos a Buenos Aires.</p>
             </div>
             <button onclick="prepararEnvioDesdeAcumulado()" class="admin-only hidden bg-emerald-600 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-emerald-700 font-medium flex items-center">
               <i class="ri-send-plane-fill mr-1"></i> Consolidar en Envío
@@ -151,15 +151,13 @@
             <table class="w-full text-xs text-left">
               <thead class="bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider">
                 <tr>
-                  <th class="py-2.5 px-3">Fecha Recolección</th>
+                  <th class="py-2.5 px-3">Fecha Retiro</th>
                   <th class="py-2.5 px-3">Centro Médico</th>
                   <th class="py-2.5 px-3 text-center">PAPs Retirados</th>
-                  <th class="py-2.5 px-3">Estado Interno</th>
+                  <th class="py-2.5 px-3">Estado</th>
                 </tr>
               </thead>
-              <tbody id="table-pendientes-body" class="divide-y divide-slate-100">
-                <!-- Se puebla dinámicamente -->
-              </tbody>
+              <tbody id="table-pendientes-body" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
@@ -185,6 +183,13 @@
                 </div>
                 <i class="ri-arrow-right-s-line text-slate-400"></i>
               </button>
+              <button onclick="abrirModalStockSeguro()" class="w-full text-left p-3 rounded-lg border border-slate-200 hover:bg-cap-accent transition flex items-center justify-between group">
+                <div class="flex items-center space-x-2">
+                  <i class="ri-box-3-line text-cap-primary"></i>
+                  <span class="text-xs font-semibold text-slate-700 group-hover:text-cap-primary">Ajustar / Incorporar Stock Central</span>
+                </div>
+                <i class="ri-arrow-right-s-line text-slate-400"></i>
+              </button>
             </div>
           </div>
         </div>
@@ -192,21 +197,21 @@
       </div>
     </section>
 
-    <!-- TAB 2: RUTA CENTROS -->
+    <!-- TAB 2: CENTROS MÉDICOS -->
     <section id="tab-centros" class="tab-content hidden space-y-6">
       <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
         <div>
-          <h3 class="font-bold text-lg text-slate-800">Control de Centros Médicos (Packs de 25 PAPs)</h3>
-          <p class="text-xs text-slate-500">Planilla de reposición e insumos en los 9 puntos de recolección semanal.</p>
+          <h3 class="font-bold text-lg text-slate-800">Control de Centros Médicos (13 Sedes)</h3>
+          <p class="text-xs text-slate-500">Incluye centros con visita semanal y centros externos que envían al laboratorio.</p>
         </div>
         <button onclick="abrirModalVisitaSegura()" class="bg-cap-primary text-white text-xs px-4 py-2 rounded-lg font-medium hover:bg-cap-dark flex items-center space-x-1">
-          <i class="ri-add-line"></i> <span>Registrar Visita / Planilla</span>
+          <i class="ri-add-line"></i> <span>Registrar Recolección / Visita</span>
         </button>
       </div>
       <div id="grid-centros" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
     </section>
 
-    <!-- TAB 3: ENVÍOS A BUENOS AIRES -->
+    <!-- TAB 3: ENVÍOS A BS. AS. -->
     <section id="tab-envios" class="tab-content hidden space-y-6">
       <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
         <div>
@@ -236,14 +241,18 @@
       </div>
     </section>
 
-    <!-- TAB 4: STOCK CENTRAL -->
+    <!-- TAB 4: STOCK CENTRAL INSUMOS -->
     <section id="tab-stock" class="tab-content hidden space-y-6">
       <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-slate-200">
         <div>
           <h3 class="font-bold text-lg text-slate-800">Inventario General de Insumos (CAP Central)</h3>
-          <p class="text-xs text-slate-500">Balance de existencias y unidades disponibles.</p>
+          <p class="text-xs text-slate-500">Control de existencias y registro de auditoría de movimientos.</p>
         </div>
+        <button onclick="abrirModalStockSeguro()" class="bg-cap-primary text-white text-xs px-4 py-2 rounded-lg font-medium hover:bg-cap-dark flex items-center space-x-1">
+          <i class="ri-add-box-line"></i> <span>Ajustar / Incorporar Stock</span>
+        </button>
       </div>
+
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <table class="w-full text-xs text-left">
           <thead class="bg-slate-50 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
@@ -258,11 +267,33 @@
           <tbody id="table-stock-body" class="divide-y divide-slate-100"></tbody>
         </table>
       </div>
+
+      <!-- Tabla de Auditoría de Movimientos de Stock -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 space-y-3">
+        <h4 class="font-bold text-slate-800 text-sm flex items-center">
+          <i class="ri-history-line text-cap-primary mr-2"></i> Auditoría de Movimientos de Stock Central
+        </h4>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider">
+              <tr>
+                <th class="py-2.5 px-3">Fecha</th>
+                <th class="py-2.5 px-3">Insumo / Concepto</th>
+                <th class="py-2.5 px-3">Tipo Movimiento</th>
+                <th class="py-2.5 px-3 text-center">Cantidad</th>
+                <th class="py-2.5 px-3">Responsable</th>
+                <th class="py-2.5 px-3">Observaciones</th>
+              </tr>
+            </thead>
+            <tbody id="table-movimientos-body" class="divide-y divide-slate-100"></tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
   </main>
 
-  <!-- MODAL: LOGIN DE ACCESO -->
+  <!-- MODAL: LOGIN -->
   <div id="modal-login" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-xs w-full p-6 space-y-4 text-center">
       <div class="p-3 bg-cap-accent rounded-full w-12 h-12 flex items-center justify-center mx-auto text-cap-primary">
@@ -279,7 +310,7 @@
     </div>
   </div>
 
-  <!-- MODAL: REGISTRAR RECOLECCIÓN EN CENTRO -->
+  <!-- MODAL: RECOLECCIÓN EN CENTRO -->
   <div id="modal-visita" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
@@ -292,20 +323,71 @@
           <select id="form-centro" class="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-cap-primary">
             <option>Cerhu</option><option>Ifem</option><option>IMT</option>
             <option>Centro Bolívar</option><option>Centro Rivadavia</option><option>Medici</option>
-            <option>Medicina para la Mujer</option><option>Eticos</option><option>Centro Medico Trinidad</option>
+            <option>Medicina para la Mujer</option><option>Etikos</option><option>Centro Medico Trinidad</option>
+            <option>Diagnos Salud</option><option>Centro médico Chacabuco</option>
+            <option>Centro médico integral (Villa Mercedes)</option><option>Bios (Villa Mercedes)</option>
           </select>
         </div>
         <div>
-          <label class="block font-semibold text-slate-700 mb-1">Muestras PAPs Retiradas</label>
+          <label class="block font-semibold text-slate-700 mb-1">Muestras PAPs Retiradas / Recibidas</label>
           <input type="number" id="form-paps" placeholder="Ej: 12" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
         </div>
         <div>
           <label class="block font-semibold text-slate-700 mb-1">Packs de Reposición Entregados (x25)</label>
           <input type="number" id="form-packs" value="1" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
         </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Responsable / Operador</label>
+          <input type="text" id="form-responsable-visita" placeholder="Tu nombre" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
+        </div>
         <div class="pt-3 flex justify-end space-x-2">
           <button type="button" onclick="closeModal('modal-visita')" class="px-4 py-2 border rounded-lg text-slate-600 hover:bg-slate-100">Cancelar</button>
-          <button type="submit" id="btn-guardar-visita" class="px-4 py-2 bg-cap-primary text-white rounded-lg font-medium hover:bg-cap-dark">Guardar en Laboratorio</button>
+          <button type="submit" class="px-4 py-2 bg-cap-primary text-white rounded-lg font-medium hover:bg-cap-dark">Guardar en Laboratorio</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: AJUSTAR STOCK CENTRAL -->
+  <div id="modal-stock" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-slate-800 text-base">Ajustar / Incorporar Stock Central</h3>
+        <button onclick="closeModal('modal-stock')" class="text-slate-400 hover:text-slate-600"><i class="ri-close-line text-xl"></i></button>
+      </div>
+      <form class="space-y-3 text-xs" onsubmit="guardarAjusteStock(event)">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Insumo</label>
+          <select id="stock-insumo" class="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-cap-primary">
+            <option value="Espátulas">Espátulas</option>
+            <option value="Cepillos">Cepillos</option>
+            <option value="Sobres">Sobres</option>
+            <option value="Vidrios / Portaobjetos">Vidrios / Portaobjetos</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Tipo de Movimiento</label>
+          <select id="stock-tipo" class="w-full border rounded-lg p-2 bg-slate-50 focus:ring-2 focus:ring-cap-primary">
+            <option value="Ingreso por Compra">Ingreso por Compra (+)</option>
+            <option value="Ajuste de Inventario">Ajuste de Inventario (+/-)</option>
+            <option value="Salida / Descarte">Salida / Descarte (-)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Cantidad de Cajas (+ o -)</label>
+          <input type="number" id="stock-cantidad" placeholder="Ej: 5 o -2" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Nombre de quien realiza el ajuste</label>
+          <input type="text" id="stock-responsable" placeholder="Tu nombre y apellido" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">Observaciones</label>
+          <input type="text" id="stock-obs" placeholder="Motivo del ajuste" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
+        </div>
+        <div class="pt-3 flex justify-end space-x-2">
+          <button type="button" onclick="closeModal('modal-stock')" class="px-4 py-2 border rounded-lg text-slate-600 hover:bg-slate-100">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-cap-primary text-white rounded-lg font-medium hover:bg-cap-dark">Registrar Ajuste</button>
         </div>
       </form>
     </div>
@@ -340,7 +422,7 @@
         </div>
         <div>
           <label class="block font-semibold text-slate-700 mb-1">Observaciones / Transporte</label>
-          <input type="text" id="envio-obs" placeholder="Ej: Enviado vía comisionista" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
+          <input type="text" id="envio-obs" placeholder="Ej: Consolidado de retiros semanales" class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-cap-primary">
         </div>
         <div class="pt-3 flex justify-end space-x-2">
           <button type="button" onclick="closeModal('modal-envio')" class="px-4 py-2 border rounded-lg text-slate-600 hover:bg-slate-100">Cancelar</button>
@@ -352,7 +434,7 @@
 
   <!-- JAVASCRIPT -->
   <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzK7A_EjMVDA3LhaKpmvzURcmt5OxsDaGwWlZhz-tHapd37n3YPb_pmjP-stRgB8o8e/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjEFzio9zyBxU_lxs90YkgMqSZ7YunrH9FiKkNdkXydR_oPLzIH6jmfykD2n-hODjc/exec';
 
     const ESTADOS_ENVIO = [
       "En Laboratorio (Procesando)",
@@ -364,7 +446,7 @@
       "Archivado"
     ];
 
-    let appData = { envios: [], centros: [], stockCentral: [], pendientes: [] };
+    let appData = { envios: [], centros: [], stockCentral: [], pendientes: [], movimientosStock: [] };
     let userPin = localStorage.getItem('cap_admin_pin') || null;
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -393,7 +475,7 @@
       closeModal('modal-login');
       actualizarEstadoUI();
       renderEnvios();
-      alert('Autenticación configurada.');
+      alert('Autenticación correcta.');
     }
 
     function cargarDatos() {
@@ -422,6 +504,7 @@
       renderCentros();
       renderEnvios();
       renderStock();
+      renderMovimientosStock();
 
       const statusEl = document.getElementById('api-status');
       statusEl.className = "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800";
@@ -460,16 +543,17 @@
       grid.innerHTML = '';
       if (appData.centros) {
         appData.centros.forEach(c => {
+          let badgeColor = c.ESTADO_CENTRO.includes('Sin Stock') ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800';
           grid.innerHTML += `
             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-2">
               <div class="flex justify-between items-center">
                 <h4 class="font-bold text-cap-primary">${c.CENTRO_MEDICO}</h4>
-                <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-medium">Al Día</span>
+                <span class="text-xs ${badgeColor} px-2 py-0.5 rounded font-medium">${c.ESTADO_CENTRO}</span>
               </div>
               <div class="text-xs text-slate-600 space-y-1">
-                <p><strong>Stock Kits:</strong> ${c.STOCK_PACKS_25}/25 packs</p>
-                <p><strong>Última Visita:</strong> ${c.ULTIMA_VISITA}</p>
-                <p><strong>Último Retiro:</strong> ${c.PAPS_RETIRADOS_ULTIMA} PAPs</p>
+                <p><strong>Stock Packs:</strong> ${c.STOCK_PACKS_25} ${c.STOCK_PACKS_25 > 0 ? '/25 packs' : ''}</p>
+                <p><strong>Modo:</strong> ${c.MODO_RETIRO || 'Visita Semanal'}</p>
+                <p><strong>Última Visita/Retiro:</strong> ${c.ULTIMA_VISITA} (${c.PAPS_RETIRADOS_ULTIMA} PAPs)</p>
               </div>
             </div>
           `;
@@ -522,6 +606,28 @@
       }
     }
 
+    function renderMovimientosStock() {
+      const tbody = document.getElementById('table-movimientos-body');
+      tbody.innerHTML = '';
+      if (appData.movimientosStock && appData.movimientosStock.length) {
+        appData.movimientosStock.slice(-15).reverse().forEach(m => {
+          let badge = m.CANTIDAD < 0 ? 'text-red-600 font-bold' : 'text-emerald-600 font-bold';
+          tbody.innerHTML += `
+            <tr>
+              <td class="py-2.5 px-3 text-slate-500">${m.FECHA}</td>
+              <td class="py-2.5 px-3 font-semibold text-slate-700">${m.INSUMO_O_CENTRO}</td>
+              <td class="py-2.5 px-3">${m.TIPO_MOVIMIENTO}</td>
+              <td class="py-2.5 px-3 text-center ${badge}">${m.CANTIDAD > 0 ? '+' + m.CANTIDAD : m.CANTIDAD}</td>
+              <td class="py-2.5 px-3 text-slate-700 font-medium">${m.RESPONSABLE}</td>
+              <td class="py-2.5 px-3 text-slate-500">${m.OBSERVACIONES || '-'}</td>
+            </tr>
+          `;
+        });
+      } else {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-slate-400">Sin movimientos registrados.</td></tr>`;
+      }
+    }
+
     function abrirModalVisitaSegura() {
       if (!userPin) return openModal('modal-login');
       openModal('modal-visita');
@@ -532,6 +638,11 @@
       openModal('modal-envio');
     }
 
+    function abrirModalStockSeguro() {
+      if (!userPin) return openModal('modal-login');
+      openModal('modal-stock');
+    }
+
     async function guardarVisita(e) {
       e.preventDefault();
       const payload = {
@@ -540,9 +651,24 @@
         centro: document.getElementById('form-centro').value,
         papsRetirados: document.getElementById('form-paps').value,
         packsRepuestos: document.getElementById('form-packs').value,
+        responsable: document.getElementById('form-responsable-visita').value,
         fecha: new Date().toISOString().split('T')[0]
       };
       await enviarAccionPOST(payload, 'modal-visita');
+    }
+
+    async function guardarAjusteStock(e) {
+      e.preventDefault();
+      const payload = {
+        action: 'ajustarStockCentral',
+        pin: userPin,
+        insumo: document.getElementById('stock-insumo').value,
+        tipo: document.getElementById('stock-tipo').value,
+        cantidadCambio: document.getElementById('stock-cantidad').value,
+        responsable: document.getElementById('stock-responsable').value,
+        observaciones: document.getElementById('stock-obs').value
+      };
+      await enviarAccionPOST(payload, 'modal-stock');
     }
 
     async function guardarNuevoEnvio(e) {
@@ -555,6 +681,7 @@
         cantidad: document.getElementById('envio-cantidad').value,
         tiroidesCasos: document.getElementById('envio-tiroides').value,
         observaciones: document.getElementById('envio-obs').value,
+        limpiarAcumulado: true,
         fecha: new Date().toISOString().split('T')[0]
       };
       await enviarAccionPOST(payload, 'modal-envio');
@@ -575,8 +702,8 @@
           body: JSON.stringify(payload)
         });
         if (modalId) closeModal(modalId);
-        alert('Operación procesada. Sincronizando tablero...');
-        setTimeout(cargarDatos, 1500);
+        alert('Operación procesada con éxito. Sincronizando tablero...');
+        setTimeout(cargarDatos, 1800);
       } catch (err) {
         alert('Error al procesar la solicitud.');
       }
@@ -584,8 +711,13 @@
 
     function prepararEnvioDesdeAcumulado() {
       let total = appData.pendientes ? appData.pendientes.reduce((acc, curr) => acc + (Number(curr.CANTIDAD_PAPS) || 0), 0) : 0;
+      if (total === 0) {
+        alert('No hay muestras acumuladas en laboratorio para consolidar.');
+        return;
+      }
       document.getElementById('envio-tipo').value = 'PAPs / Citología';
       document.getElementById('envio-cantidad').value = total;
+      document.getElementById('envio-obs').value = 'Consolidado de retiros en centros médicos';
       abrirModalEnvioSeguro();
     }
 
